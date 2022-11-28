@@ -9,11 +9,16 @@ public class Player : MonoBehaviour
     private float _jumpForce = 5.0f;
     [SerializeField]
     private bool _grounded = false;
+    private Animator _animator;
+    public float speedRun = 5;
+    private SpriteRenderer _spritePlayer;
     // Start is called before the first frame update
     void Start()
     {
         // assign hendle of rigibody
         _rigid = GetComponent<Rigidbody2D>();
+        _spritePlayer = GetComponent<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -21,7 +26,7 @@ public class Player : MonoBehaviour
     {
         // horizontal input for left/right
         float move = Input.GetAxisRaw("Horizontal");
-        if(Input.GetKeyDown(KeyCode.Space) && _grounded == true)
+        if (Input.GetKeyDown(KeyCode.Space) && _grounded == true)
         {
             // jump
             _rigid.velocity = new Vector2(_rigid.velocity.x, _jumpForce);
@@ -33,12 +38,23 @@ public class Player : MonoBehaviour
         
         if(hitInfo.collider != null)
         {
-            Debug.Log("Hit: " + hitInfo.collider.name); 
+            
             _grounded = true;
 
         }
 
-        _rigid.velocity = new Vector2(move, _rigid.velocity.y);
-        
+        _rigid.velocity = new Vector2(move*speedRun*Time.deltaTime, _rigid.velocity.y);
+        if (move > 0)
+        {
+            _spritePlayer.flipX = false;
+            _animator.SetBool("Run",true);
+            _animator.SetBool("Idle",false);
+        }
+        else if (move < 0)
+        {
+            _spritePlayer.flipX = true;
+            _animator.SetBool("Run",true);
+            _animator.SetBool("Idle",false);
+        }
     }
 }
