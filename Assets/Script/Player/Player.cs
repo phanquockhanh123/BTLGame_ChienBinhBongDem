@@ -57,9 +57,10 @@ public class Player : MonoBehaviour,IDamageable
     }
     void Movement()
     {
+        float move = CrossPlatformInputManager.GetAxis("Horizontal");
         if (stop == false)
         {
-            float move = CrossPlatformInputManager.GetAxisRaw("Horizontal");/* Input.GetAxisRaw("Horizontal");*/
+            
             float move1 = Input.GetAxisRaw("Horizontal");
             _ground = IsGrounded();
 
