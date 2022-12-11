@@ -5,6 +5,8 @@ using UnityEngine;
 public class Attack : MonoBehaviour
 {
     private bool _canDamage = true;
+    [SerializeField] AudioSource audi;
+    [SerializeField] AudioClip AudiHit;
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Hit: " + other.name);
@@ -16,7 +18,9 @@ public class Attack : MonoBehaviour
                 hit.Damage();
                 _canDamage = false;
                 StartCoroutine(ResetDamage());
+                
             }
+            audi.PlayOneShot(AudiHit);
         }
     }
     IEnumerator ResetDamage()

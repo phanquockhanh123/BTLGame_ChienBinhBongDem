@@ -24,6 +24,12 @@ public class Player : MonoBehaviour,IDamageable
     public panelWin PanelWin;
     public panelLose PanelLose;
     public int Health { get; set; }
+    [SerializeField] AudioSource audi;
+    [SerializeField] AudioClip step;
+    [SerializeField] AudioClip jump;
+    [SerializeField] AudioClip sword;
+    [SerializeField] AudioClip die;
+    [SerializeField] AudioClip itemCollect;
     void Start()
     {
         
@@ -34,9 +40,10 @@ public class Player : MonoBehaviour,IDamageable
         //spider = GameObject.FindGameObjectWithTag("Spider").GetComponent<Spider>();
         Health = 4;
         diamod = PlayerPrefs.GetInt("diamod");
-
+        audi = GetComponent<AudioSource>();
     }
 
+    private bool isDead;
     // Update is called once per frame
     void Update()
     {
@@ -45,11 +52,14 @@ public class Player : MonoBehaviour,IDamageable
         if (CrossPlatformInputManager.GetButtonDown("A_Button") && IsGrounded() == true && Deal == false)
         {
             _playAnim.Attack();
+            audiSword();
         }
-        if (Health < 1)
+        if (Health < 1&&!isDead)
         {
             stop = true;
+            isDead = true;
             PanelLose.PanelLose.SetActive(true);
+            audiDeath();
             //StartCoroutine(Restart());
         }
         UIManager.Instance.UpdateGemCount(diamod);
@@ -57,18 +67,19 @@ public class Player : MonoBehaviour,IDamageable
     }
     void Movement()
     {
-        float move = CrossPlatformInputManager.GetAxis("Horizontal");
+        
         if (stop == false)
         {
+            float move = CrossPlatformInputManager.GetAxis("Horizontal");
             
-            float move1 = Input.GetAxisRaw("Horizontal");
+            //float move1 = Input.GetAxisRaw("Horizontal");
+            //Debug.Log("Move: "+move1);
             _ground = IsGrounded();
-
-            if ((move > 0 || move1 > 0) && Deal == false)
+            if ((move > 0 /*|| move1 > 0*/) && Deal == false)
             {
                 Flip(true);
             }
-            else if ((move < 0 || move1 < 0) && Deal == false)
+            else if ((move < 0 /*|| move1 < 0*/) && Deal == false)
             {
                 Flip(false);
             }
@@ -79,12 +90,13 @@ public class Player : MonoBehaviour,IDamageable
                 resetJumpNeeded = true;
                 StartCoroutine(ResetJumpNeededRoutine());
                 _playAnim.Jump(true);
+                audiJump();
             }
 
-            _rigid.velocity = new Vector2(move * _speed, _rigid.velocity.y);
-            _playAnim.Move(move);
-            _rigid.velocity = new Vector2(move1 * _speed, _rigid.velocity.y);
-            _playAnim.Move(move1);
+            _rigid.velocity = new Vector2(move * _speed*10, _rigid.velocity.y);
+            _playAnim.Move(move*10);
+            /*_rigid.velocity = new Vector2(move1 * _speed, _rigid.velocity.y);
+            _playAnim.Move(move1);*/
         }
     }
     void Flip(bool right)
@@ -185,9 +197,28 @@ public class Player : MonoBehaviour,IDamageable
         if(other.gameObject.tag == "LoadLevel")
         {
             stop = true;
-            Debug.Log("hoan thanh !!!!!!!!!!");
             //SceneManager.LoadScene("Level2");
             PanelWin.PanelWin.SetActive(true);
         }
+    }
+    public void audiStep()
+    {
+        audi.PlayOneShot(step);
+    }
+    public void audiJump()
+    {
+        audi.PlayOneShot(jump);
+    }
+    public void audiDeath()
+    {
+        audi.PlayOneShot(die);
+    }
+    public void audiSword()
+    {
+        audi.PlayOneShot(sword);
+    }
+    public void audiCollect()
+    {
+        audi.PlayOneShot(itemCollect);
     }
 }
